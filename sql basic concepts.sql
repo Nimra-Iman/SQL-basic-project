@@ -39,7 +39,7 @@ SELECT * FROM EMP WHERE SALARY IS NULL;
 --  CHANGE THE DEPARTMENT OF EMPLOYES WHOSE SALARY IS LESS THAN 3000
 UPDATE EMP SET DEPT = "UPDATED" WHERE SALARY>3000;
 SELECT * FROM EMP;
-
+  
 -- SHOW THE NAME OF EMPLOYEES WHERE SALARY IS FROM 1000 TO 5000  (BETWEEN)
 SELECT * FROM EMP WHERE SALARY BETWEEN 1000 AND 5000;
 
@@ -55,7 +55,7 @@ SELECT * FROM EMP WHERE E_NAME BETWEEN "ASAD" AND "NIMRA";   -- Y ALPHABETICALLY
 
 select dept, count(*) from emp group by dept;
 
--- CANDIDATE KEYS:
+-- CANDIDATE KEYS: 
 -- all unique keys of cadidate are cadidate jeys, e.g id card number, roll number, registeration number,
 -- phone number etc. but unique and not null keys are primary keys. e.g roll number, registeration
 -- number. primary key valy tuple ko kabhi bhi khali nhi chor skty, ab student k case m bhht 
@@ -74,7 +74,7 @@ select dept, count(*) from emp group by dept;
 -- student is name of base table ,, or agar table already bna ho to fk is trah s lgaty:
 -- alter table table_name add constraint fk foreign key ( roll_no) references student(roll_no)
 -- pk and fk ka name different ho skta h zruri nhi k column ka name same hi hon or ek table m ek 
--- s ziada fk ho skti hn butpk ek table m ek hi hoti h 
+-- s ziada fk ho skti hn but pk ek table m ek hi hoti h 
 
 -- ------------------  SQL JOINS  ---------------------------------
 -- joins tab hi use hoty hn jab hmy ek table ki bijay 2 tables m kuch get krna ho, yani condition hi is
@@ -216,6 +216,12 @@ lead(new_id,2 ) over ( partition by new_cat order by new_id ) from test_data;
 
 select new_id, new_cat,
 lag(new_id ,2) over ( partition by new_cat order by new_id ) from test_data;
+
+
+SELECT new_id, new_cat,
+last_value(new_id) OVER (PARTITION BY new_cat)
+FROM test_data;
+
 
 
 
