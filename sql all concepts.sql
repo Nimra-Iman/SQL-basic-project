@@ -20,6 +20,24 @@ INSERT INTO emp (e_id, e_name, dept, salary) VALUES
 	(5, 'asad', "MRKT", 15000)
 ;
 
+-- IF you want to add a new column
+-- then you cannot directly insert values to it because y kesy pta lgy ga k 
+-- is newly-made column ki value dusry columns k kis value k corresponding enter ho gi, 
+-- for example: look below: 
+alter table emp add column age int;
+insert into emp(age) values (2),(3),(4); -- this line generate error because usy
+-- nhi pta k kis e_name pr y value jay gi, e_id m issue nhi ay ga q k 
+-- us ki value auto-increment ho rhi h , ab is ko esy solve kr skty 
+-- hn k:
+-- --- insert ki bijay update kr do k jha jha bhi name ki, dept or salary
+-- ki value y h vha vha age m y value fill kr do 
+--  agr yhan name notnull na hota to
+-- ap insert kr skty age m values ko update_set use kiye bagher or vo is trah
+-- hota k age m values add hoti sirf un un jga pr jha jha ID auto-incremented
+-- values show kr rhi, baki hr jga NULL show hota
+
+
+
 -- slect distinct
 SELECT DISTINCT DEPT FROM EMP;
 
@@ -131,10 +149,18 @@ over(partition by new_cat ) as sum
 from test_data order by new_id desc;
 
 select new_id, new_cat , avg(new_id) 
-over(partition by new_cat ) as sum
+over(partition by new_cat order by new_id) as sum
 from test_data ;
+-- --- 1st it will partition (mean make mini tables), then sort data based on
+-- order and then apply fun()
+-- ---  with order by: CUMULATIVE FUNCTION
+-- --- without order by, just partition by: TOTAL COUNT/AVG/SUM ETC
+-- ---  min, max, count, avg, sum  ARE AGGREGATE FUNCTIONS
 
 -- -----------  rank functions  ----
+-- IN ALL RANK FUNCTIONS, OVER() K ANDR ORDER BY LIKHNA ZRURI H VRNA 
+-- HR ROW KO EQUAL CONSIDER KIA JAY GA AND EACH TIME, EACH ROW 
+-- WILL GET RANK 1
 -- ROW NUMBER() : ek window k ander jitni bhi rows hon gi un sab ko row number
 -- de ga, e. agar ek window k ander 3 rows hn to 1st row ka row number 1
 -- then 2nd row ka row number 2 then 3rd ka 3 , it is just like serial number
@@ -180,6 +206,8 @@ select new_cat , new_id,
  percent_rank() over(partition by new_cat order by new_id) as "percent_rank"
 from test_data;
 
+-- YHAN PHLY PARTITION KRY GA OR PHIR HR PARTITION M ORDER KRY GA 
+
 select new_cat , 
  row_number() over(partition by new_cat ) as "row_number", 
  rank() over(partition by new_cat ) as "rank", 
@@ -222,6 +250,25 @@ SELECT new_id, new_cat,
 last_value(new_id) OVER (PARTITION BY new_cat)
 FROM test_data;
 
+
+-- EXCEPTIONAL BEHAVIOUR:
+
+-- => in all AGGREGATE FUNCTION, if we use ORDER BY inside over() then 
+-- 	   we will get commulative sum/avg/count etc etc
+-- => in LAST_VALUE function of analytic functions, if we do not write 
+-- ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING na likhyu to 
+-- result ajeeb mily ga q k by defaukt vo UNBOUNDED PRECEDING AND  
+-- CURRENT ROW valy rule ko follow krta h,,,,, UNBOUNDED PRECEDING AND 
+-- UNBOUNDED FOLLOWING ka matlab y hota h k partition ki start row s le kr end 
+-- vali row tak but UNBOUNDED PRECEDING AND CURRECT ROW ka matlab y 
+-- hota h k partition ki start s le kr current row tk consider kro
+-- to is s current row hi last row ho gi asal m so this is the 
+-- abnormal beheviour.
+-- the following is the correct aproach
+select new_cat, new_id, last_value(new_id) 
+over(partition by new_cat order by new_id 
+ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as true_last_val
+from test_data;
 
 
 
